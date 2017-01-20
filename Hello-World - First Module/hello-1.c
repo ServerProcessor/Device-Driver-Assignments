@@ -1,13 +1,17 @@
-#include <linux/module.h>	/* Needed by all modules */
-#include <linux/kernel.h>	/* Needed for KERN_INFO */
+#include <linux/module.h>  /* Needed by all module */
+#include <linux/kernel.h>  /* Needed for kern info */
+#include <linux/init.h>    /* Needed for the macros- will be discussed */
 
-int init_module(void)
-{
-	printk(KERN_INFO "Hello world 1.\n");
-	return 0;
-}
+static int hey_init(void)
+  {
+     printk(KERN_INFO "How are You ? \n");
+     return 0;  /* Loaded successfully */
+  }
 
-void cleanup_module(void)
-{
-	printk(KERN_INFO "Goodbye world 1.\n");
-}
+static void hey_exit(void)
+  {
+     printk(KERN_INFO "Okay fine, Bye \n");
+  }
+
+module_init(hey_init);
+module_exit(hey_exit);
