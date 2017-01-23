@@ -2,6 +2,12 @@
 #include <linux/module.h>
 #include <linux/fs.h> /* For the character driver support */
 
+/* ssize is not mentioned in the C standard but in POSIX standard which allows you to be
+pretty sure to be able to port them easily among a large family of Unix derivatives (including Linux, but not limited to it) */
+
+/*There's no guarantee in the C or POSIX standards that sizeof(int) >= sizeof(ssize_t), nor the other way around. 
+Typically ssize_t is larger than int*/
+
 ssize_t ex07_read(struct file *pfile, char __user *buffer, size_t length, loff_t *offset);
 {
   printk(KERN_ALERT "Inside function %s\n", __FUNCTION__);
