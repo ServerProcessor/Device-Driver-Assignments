@@ -38,7 +38,7 @@ struct file_operations ex07_file_operations = {
       .release = ex07_close,
 };
 
-int ex01_module_init(void)
+int ex07_module_init(void)
  {
     printk(KERN_ALERT "Inside function %s\n", __FUNCTION__);
     
@@ -49,7 +49,7 @@ int ex01_module_init(void)
     return 0;
  }
  
-void ex01_module_exit(void)
+void ex07_module_exit(void)
  {
     printk(KERN_ALERT "Inside function %s\n", __FUNCTION__);
     /* Unregister the char device driver */
