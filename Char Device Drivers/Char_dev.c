@@ -8,22 +8,22 @@ pretty sure to be able to port them easily among a large family of Unix derivati
 /*There's no guarantee in the C or POSIX standards that sizeof(int) >= sizeof(ssize_t), nor the other way around. 
 Typically ssize_t is larger than int*/
 
-ssize_t ex07_read(struct file *pfile, char __user *buffer, size_t length, loff_t *offset);
+ssize_t ex07_read(struct file *pfile, char __user *buffer, size_t length, loff_t *offset)
 {
   printk(KERN_ALERT "Inside function %s\n", __FUNCTION__);
   return 0; /* Empty file */
 }
-ssize_t ex07_write(struct file *pfile, const char __user *buffer, size_t length, loff_t *offset);
+ssize_t ex07_write(struct file *pfile, const char __user *buffer, size_t length, loff_t *offset)
 {
   printk(KERN_ALERT "Inside function %s\n", __FUNCTION__);
   return length;
 }
-int ex07_close(struct inode *pinode, struct file *pfile);
+int ex07_close(struct inode *pinode, struct file *pfile)
 {
   printk(KERN_ALERT "Inside function %s\n", __FUNCTION__);
   return 0;
 }
-int ex07_open(struct inode *pinode, struct file *pfile); 
+int ex07_open(struct inode *pinode, struct file *pfile)
 {
   printk(KERN_ALERT "Inside function %s\n", __FUNCTION__);
   return 0;
