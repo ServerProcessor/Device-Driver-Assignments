@@ -45,7 +45,7 @@ int ex07_module_init(void)
     /* Register with the kernel and indicate that we are registering a char device driver */
     register_chrdev(240 /* Major Number */,
                     "Simple Char Drv" /* Name of the driver */,
-                    &ex01_file_operations/* File Operations */)
+                    &ex07_file_operations/* File Operations */)
     return 0;
  }
  
@@ -56,7 +56,7 @@ void ex07_module_exit(void)
     unregister_chrdev(240, "Simple Char Drv");
  }
  
-module_init(ex01_module_init);
-module_exit(ex01_module_exit);
+module_init(ex07_module_init);
+module_exit(ex07_module_exit);
 
 
