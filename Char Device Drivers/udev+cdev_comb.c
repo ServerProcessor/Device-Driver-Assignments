@@ -20,7 +20,7 @@ dev_t dev_num        /* dev_t first | first = mkdev(4,40) or dev_t = <4,40> | in
 
 #define DEVICE_NAME   "adevice"
 
-*/ Register the capabilities of the device by entry module */
+/* Register the capabilities of the device by entry module */
 
 static int driver_entry(void) {
     ret = alloc_chrdev_region(&dev_num,0,1,DEVICE_NAME);
