@@ -11,7 +11,7 @@ Typically ssize_t is larger than int*/
 ssize_t ex07_read(struct file *pfile, char __user *buffer, size_t length, loff_t *offset)
 {
   printk(KERN_ALERT "Inside function %s\n", __FUNCTION__);
-  return 0; /* Empty file */
+  return 0;
 }
 ssize_t ex07_write(struct file *pfile, const char __user *buffer, size_t length, loff_t *offset)
 {
