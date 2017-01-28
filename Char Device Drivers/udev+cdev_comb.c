@@ -14,7 +14,7 @@ struct fake_device {
 /* Register the device using cdev object and other variables */
 struct cdev *mcdev;  /* m = my */
 int major_number;    /* Major number from dev_t */
-int ret;             /* To hold return values of functions ( declaring lots of variables will eat up the kernel stack )
+int ret;             /* To hold return values of functions ( declaring lots of variables will eat up the kernel stack )*/
 
 dev_t dev_num        /* dev_t first | first = mkdev(4,40) or dev_t = <4,40> | int maj,min | maj = MAJOR(dev_t); | min = MINOR(dev_t); */
 
