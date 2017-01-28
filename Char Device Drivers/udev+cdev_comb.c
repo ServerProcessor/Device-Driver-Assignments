@@ -20,6 +20,42 @@ dev_t dev_num        /* dev_t first | first = mkdev(4,40) or dev_t = <4,40> | in
 
 #define DEVICE_NAME   "adevice"
 
+int device_open(struct inode *inode, struct file *filp){/* *filp contains the file operation structure defined at the bottom */
+  /* Only one process to open the device by using semaphore asmutual exclusive lock */
+  if(down_interruptible(&virtual_device.sem) != 0) {
+    printk(KERN_ALERT "Could not lock device during open");
+    return -1;
+  }
+  
+  printk(KERN_INFO "Opened device");
+  return 0;
+}
+
+ssize_t device_read(struct file *filp, char *bufStoreData, size_t bufCount, loff_t *curOffset) { /*Offset tells current position of open file */
+  printk(KERN_INFO "Reading from device");
+  ret = copy_to_user(bufStoreData,virtual_device.data,bufCount); /*Take data from kernelspace to userspace */
+  /* copy_to_user(destination,source,sizetotransfer); */
+}
+
+ssize_t device_write(struct file *filp, const char *bufStoreData, size_t bufCount, loff_t *curOffset) { /*Offset tells current position of open file */
+  printk(KERN_INFO "Writing to device");
+  ret = copy_to_user(virtual_device.data,bufSourceData, bufCount); /*Take data from kernelspace to userspace */
+}
+
+int device_close(struct inode *inode, struct file *filp){/* *filp contains the file operation structure defined at the bottom */
+    up(&virtual_device.sem); /*Release of mutex */
+    printk(KERN_INFO "Closd device");
+    return 0;
+  }
+
+struct file_operations fops = {
+    .owner = THIS_MODULE,
+    .open = device_open,
+    .release = device_close,
+    .write = device_write,
+    .read = device_read
+};
+
 /* Register the capabilities of the device by entry module */
 
 static int driver_entry(void) {
@@ -35,7 +71,28 @@ static int driver_entry(void) {
      printk(KERN_INFO " Major Number is %d",major_number);
      printk(KERN_INFO "\tuse \"mknod /dev/%s %d 0\" for device file,DEVICE_NAME,major_number);
      
+     mcdev = cdev_alloc(); /*Create our cdev structure */
+     mcdev->ops = &fops;   /* struct file_operations */
+     mcdev->owner = THIS_MODULE;
+     /* cdev is now created and we need to add it to the kernel */
+     ret = cdev_add(mcdev,dev_num,1); /* cdev_add(struct cdev* dev,dev_t num,unsigned int count) */
+     if(ret<0) {
+       printk(KERN_ALERT "Unable to add cdev to kernel");
+       return ret;
+     }
+     sema_init(&virtual_device.sem,1);    
      return 0;
+ }
+            
+ static void driver_exit(void) {
+     cdev_del(mcdev)
+     unregister_chrdev_region(dev_num,1);
+     pritnk(KERN_ALERT "Unloaded the module");
+ }
+ 
+ module_init(driver_entry);
+ module_exit(driver_exit);
+            
    
 
 
