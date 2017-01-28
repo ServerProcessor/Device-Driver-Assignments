@@ -16,7 +16,7 @@ struct cdev *mcdev;  /* m = my */
 int major_number;    /* Major number from dev_t */
 int ret;             /* To hold return values of functions ( declaring lots of variables will eat up the kernel stack )*/
 
-dev_t dev_num        /* dev_t first | first = mkdev(4,40) or dev_t = <4,40> | int maj,min | maj = MAJOR(dev_t); | min = MINOR(dev_t); */
+dev_t dev_num;        /* dev_t first | first = mkdev(4,40) or dev_t = <4,40> | int maj,min | maj = MAJOR(dev_t); | min = MINOR(dev_t); */
 
 #define DEVICE_NAME   "adevice"
 
@@ -39,7 +39,7 @@ ssize_t device_read(struct file *filp, char *bufStoreData, size_t bufCount, loff
 
 ssize_t device_write(struct file *filp, const char *bufStoreData, size_t bufCount, loff_t *curOffset) { /*Offset tells current position of open file */
   printk(KERN_INFO "Writing to device");
-  ret = copy_to_user(virtual_device.data,bufSourceData, bufCount); /*Take data from kernelspace to userspace */
+  ret = copy_to_user(virtual_device.data,bufStoreData, bufCount); /*Take data from kernelspace to userspace */
 }
 
 int device_close(struct inode *inode, struct file *filp){/* *filp contains the file operation structure defined at the bottom */
@@ -69,7 +69,7 @@ static int driver_entry(void) {
      
      major_number = MAJOR(dev_num);
      printk(KERN_INFO " Major Number is %d",major_number);
-     printk(KERN_INFO "\tuse \"mknod /dev/%s %d 0\" for device file,DEVICE_NAME,major_number);
+     printk(KERN_INFO "\tuse \"mknod /dev/%s %d 0\" for device file",DEVICE_NAME,major_number);
      
      mcdev = cdev_alloc(); /*Create our cdev structure */
      mcdev->ops = &fops;   /* struct file_operations */
@@ -85,9 +85,9 @@ static int driver_entry(void) {
  }
             
  static void driver_exit(void) {
-     cdev_del(mcdev)
+     cdev_del(mcdev);
      unregister_chrdev_region(dev_num,1);
-     pritnk(KERN_ALERT "Unloaded the module");
+     printk(KERN_ALERT "Unloaded the module");
  }
  
  module_init(driver_entry);
