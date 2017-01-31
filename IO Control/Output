@@ -1,0 +1,5 @@
+
+    ./query_app — to display the driver variables
+    ./query_app -c — to clear the driver variables
+    ./query_app -g — to display the driver variables
+    ./query_app -s — to set the driver variables (not mentioned above)
