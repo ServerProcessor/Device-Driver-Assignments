@@ -3,11 +3,11 @@
 #include <linux/version.h>
 #include <linux/fs.h>      /* File operations strucutre for open/close , read/write to device ( includes init.h too ) */
 #include <linux/cdev.h>    /* This is a char driver; makes cdev available and register the char device to the kernel */
-#include <linux/device.h>
+#include <linux/device.h>  /* Configuraion of the processor and core peripherals */
 #include <linux/errno.h>   /* Error Handling */
 #include <asm/uaccess.h>   /*copy_to_user; copy_from_user : To map data from userspace to kernel space */
  
-#include "query_ioctl.h"
+#include "query_ioctl.h"   /* Custom inculsion */
  
 #define FIRST_MINOR 0
 #define MINOR_CNT 1
