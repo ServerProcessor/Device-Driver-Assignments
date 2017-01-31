@@ -1,1 +1,6 @@
-
+ioctl( ) : Input-Output Control.
+It is a system call available with most of the driver categories.
+For example : Volume control for audio device or display configuration for video device.
+Format : 
+       int ioctl(struct inode *i, struct file *f, unsigned int cmd, unsigned long arg);
+       long ioctl(struct file *f, unsigned int cmd, unsigned long arg);
