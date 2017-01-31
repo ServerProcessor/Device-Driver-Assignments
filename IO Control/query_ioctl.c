@@ -13,7 +13,7 @@
 #define MINOR_CNT 1
  
 static dev_t dev;           /* dev_t first | first = mkdev(4,40) or dev_t = <4,40> | int maj,min | maj = MAJOR(dev_t); | min = MINOR(dev_t); */
-static struct cdev c_dev;
+static struct cdev c_dev;   /* struct cdve operations encapsulates the file operations,major & minor number info */
 static struct class *cl;
 static int status = 1, dignity = 3, ego = 5;
  
@@ -40,9 +40,9 @@ static long my_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
             q.status = status;
             q.dignity = dignity;
             q.ego = ego;
-            if (copy_to_user((query_arg_t *)arg, &q, sizeof(query_arg_t)))  /* DOUBT */
+            if (copy_to_user((query_arg_t *)arg, &q, sizeof(query_arg_t)))  /*Take data from kernelspace to userspace */
             {
-                return -EACCES;  /* DOUBT */
+                return -EACCES;  /* EACCES when one of the directories composing the path is not readable to the program */
             }
             break;
         case QUERY_CLR_VARIABLES:
@@ -60,12 +60,13 @@ static long my_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
             ego = q.ego;
             break;
         default:
-            return -EINVAL; /* DOUBT */
+            return -EINVAL; /* If one of the  parameters is invalid */
     }
  
     return 0;
 }
  
+/* To hold the file operations performed on this device */
 static struct file_operations query_fops =
 {
     .owner = THIS_MODULE,
@@ -89,20 +90,20 @@ static int __init query_ioctl_init(void)
         return ret;
     }
  
-    cdev_init(&c_dev, &query_fops);
+    cdev_init(&c_dev, &query_fops);  /* New mechanism similar to cdev_add */
  
-    if ((ret = cdev_add(&c_dev, dev, MINOR_CNT)) < 0)
+    if ((ret = cdev_add(&c_dev, dev, MINOR_CNT)) < 0) /* cdev_add(struct cdev* dev,dev_t num,unsigned int count) */
     {
         return ret;
     }
      
     if (IS_ERR(cl = class_create(THIS_MODULE, "char")))
     {
-        cdev_del(&c_dev);
+        cdev_del(&c_dev);       /* Remove char device from the system */
         unregister_chrdev_region(dev, MINOR_CNT);
-        return PTR_ERR(cl);
+        return PTR_ERR(cl);  /* Rerieves the negative error number from IS_ERR */
     }
-    if (IS_ERR(dev_ret = device_create(cl, NULL, dev, NULL, "query")))
+    if (IS_ERR(dev_ret = device_create(cl, NULL, dev, NULL, "query"))) /* Tests if the supplied pointer should be considered an error value instead of a valid pointer to data. */
     {
         class_destroy(cl);
         cdev_del(&c_dev);
@@ -115,9 +116,9 @@ static int __init query_ioctl_init(void)
  
 static void __exit query_ioctl_exit(void)
 {
-    device_destroy(cl, dev);
-    class_destroy(cl);
-    cdev_del(&c_dev);
+    device_destroy(cl, dev);  /* Removes a device created with device_create */
+    class_destroy(cl);        /* Destroy a struct class structure */
+    cdev_del(&c_dev);     /* Remove char device from the system */
     unregister_chrdev_region(dev, MINOR_CNT);
 }
  
