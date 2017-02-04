@@ -12,6 +12,9 @@ struct fake_device {
 } virtual_device;
 
 /* Register the device using cdev object and other variables */
+/* The struct cdev is the kernel's internal structure that represents char devices. So this field is a pointer to that structure
+   while the inode refers to the char device file. Therefore if the kernel has to invoke the device it has to register a structure
+   of this type. */
 struct cdev *mcdev;  /* m = my */
 int major_number;    /* Major number from dev_t */
 int ret;             /* To hold return values of functions ( declaring lots of variables will eat up the kernel stack )*/
@@ -61,7 +64,7 @@ struct file_operations fops = {
 static int driver_entry(void) {
     ret = alloc_chrdev_region(&dev_num,0,1,DEVICE_NAME);
     /*  &dev_num is going to hold the major and the minor number
-        Start with major number 0 and end with minor number 1 with the device name */
+        Start with major number 0 and 1 is the number of minor numbers required. */
     if(ret<0) {
           printk(KERN_INFO "Failed to allocate a major number");
           return ret; /* Going to return a negative number in case of error */
@@ -71,11 +74,13 @@ static int driver_entry(void) {
      printk(KERN_INFO " Major Number is %d",major_number);
      printk(KERN_INFO "\tuse \"mknod /dev/%s %d 0\" for device file",DEVICE_NAME,major_number);
      
-     mcdev = cdev_alloc(); /*Create our cdev structure */
+     mcdev = cdev_alloc(); /*Allocate a cdev structure. Returns a cdev structure or NULL on failure. */
      mcdev->ops = &fops;   /* struct file_operations */
      mcdev->owner = THIS_MODULE;
      /* cdev is now created and we need to add it to the kernel */
-     ret = cdev_add(mcdev,dev_num,1); /* cdev_add(struct cdev* dev,dev_t num,unsigned int count) */
+     ret = cdev_add(mcdev,dev_num,1); /* cdev_add(struct cdev* dev,dev_t num,unsigned int count). This adds a char device ot the
+     system. 1 represents the no. of minor numbers corresponding to the device. A negative error code means error */
+     
      if(ret<0) {
        printk(KERN_ALERT "Unable to add cdev to kernel");
        return ret;
@@ -85,7 +90,7 @@ static int driver_entry(void) {
  }
             
  static void driver_exit(void) {
-     cdev_del(mcdev);
+     cdev_del(mcdev);   /* Remove a cdev from the system */
      unregister_chrdev_region(dev_num,1);
      printk(KERN_ALERT "Unloaded the module");
  }
