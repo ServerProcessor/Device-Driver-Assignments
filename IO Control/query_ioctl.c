@@ -13,7 +13,7 @@
 #define MINOR_CNT 1
  
 static dev_t dev;           /* dev_t first | first = mkdev(4,40) or dev_t = <4,40> | int maj,min | maj = MAJOR(dev_t); | min = MINOR(dev_t); */
-static struct cdev c_dev;   /* struct cdve operations encapsulates the file operations,major & minor number info */
+static struct cdev c_dev;   /* struct cdev operations encapsulates the file operations,major & minor number info */
 static struct class *cl;
 static int status = 1, dignity = 3, ego = 5;
  
