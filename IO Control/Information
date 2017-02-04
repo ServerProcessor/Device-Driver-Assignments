@@ -4,4 +4,4 @@ For example : Volume control for audio device or display configuration for video
 Format : 
        int ioctl(struct inode *i, struct file *f, unsigned int cmd, unsigned long arg);
        long ioctl(struct file *f, unsigned int cmd, unsigned long arg);
--ENOTTY : "No such ioctl for device".\ and does not offer an ioctl entry point.
+-ENOTTY : "No such ioctl for device" and does not offer an ioctl entry point.
